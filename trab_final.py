@@ -38,7 +38,9 @@ def retorna_ind_mais_violento(clusters):
 
 def retorna_compact_tax(clusters):
 	
-
+"""
+	retornar proporcao entre areas e n~ao violencias
+"""
 	menor_violencia = clusters[retorna_ind_menos_violento(clusters)].criminalidade
     maior_violencia = clusters[retorna_ind_mais_violento(clusters)].criminalidade
     return maior_violencia / menor_violencia;
