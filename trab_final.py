@@ -22,24 +22,31 @@ def retorna_viz_outro_cluster(atm_front):
 		atms_ja_visitados = atm
 
 	
-
-def retorna_compact_tax(clusters):
-	def retorna_ind_mais_violento(clusters):
+def retorna_ind_mais_violento(clusters):
 		indice = 0
 		for i,cluster in enumerate(clusters):
 			if cluster.criminalidade > clusters[indice].criminalidade:
 				indice = i;
+	    return indice
+
 	def retorna_ind_menos_violento(clusters):
 		indice = 0
 		for i,cluster in enumerate(clusters):
 			if cluster.criminalidade < clusters[indice].criminalidade:
 				indice = i;
+	    return indice
+
+def retorna_compact_tax(clusters):
+	
+
 	menor_violencia = clusters[retorna_ind_menos_violento(clusters)].criminalidade
     maior_violencia = clusters[retorna_ind_mais_violento(clusters)].criminalidade
     return maior_violencia / menor_violencia;
 
 def gera_sol_vizinha(clusters, compact_tax):
+    compact_tax = 
     cl_perdedor = clusters[randint(0,len(clusters) -1)]
+    atm_mudante = 
 
     
 def sim_annealing(clusters, n, t_inicial, t_final, a, compact_tax):
