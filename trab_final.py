@@ -5,18 +5,23 @@ from operator import gt
 from operator import lt
 
 Cluster = namedtuple('Cluster', ['posicoes_atomos', 'criminalidade'])
-Atomo = namedtuple('Atomo', ['qtdCrimes', 'posicoes_vizinhos','num_cluster'])
+Atomo = namedtuple('Atomo', ['qtd_crimes', 'posicoes_vizinhos','num_cluster'])
 Ponto = namedtuple('Ponto', ['x','y'])
 Ambiente = namedtuple('Ambiente', ['clusters','matriz_atomos'])
 
-def retorna_atm_fronteira(cluster, num_cluster,  matriz_atomos):
+def retorna_pos_atm_fronteira(cluster, num_cluster,  matriz_atomos):
+
     atms_ja_visitados = []
     while(True):
-        atm = matriz_atomos[
-                cluster.posicoes_atomos[randint(0,len(cluster.atomos))]
+        pos_atm = cluster.posicoes_atomos[randint(0,len(cluster.atomos))]
+        atm = matriz_atomos[pos_atm.x][pos_atm.y]
+        vizs_outro_cluster = [pos in atm.posicoes_vizinhos 
+                if not (matriz_atomos[pos.x][pos.y].num_cluster == num_cluster)
         ]
-        if(len([a in atm.posicoes_vizinhos if not (a.num_cluster == num_cluster)])):
-            return atm
+        if(len(vizs_outro_cluster)):
+            return pos_atm
+
+        atms_ja_visitados.append(atm)
 
 def retorna_ind_cluster_viz(atm_front, matriz_atomos):
     atms_visitadas = []
@@ -60,30 +65,51 @@ def retorna_compact_tax(clusters):
 """
 
 def retorna_compact_tax(clusters):
-    return len(retorna_cluster_dominante(clusters, gt))
+   return len(retorna_cluster_dominante(clusters, gt))
             /len(retorna_cluster_dominante(clusters, lt))
 
 
+
+def retorna_mudanca(clusters, matriz_atomos):
+    ind_cl_perdedor = randint(0,len(clusters) -1)
+    pos_atm_mudante = retorna_pos_atm_fronteira(
+            ambiente.clusters[ind_cl_perdedor], ind_cl_perdedor, matriz_atomos
+    )
+    atm_mudante = matriz_atomos[pos_atm_mudante.x][pos_atm_mudante.y]
+    ind_cl_recipiente = retorna_ind_cluster_viz(atm_mudante)
+    return InfoMudanca(atm_mudante, ind_cl_perdedor, ind_cl_recipiente)
+
+def retorna_atm_atualizado(atm_mudante, ind_cl_recipiente):
+    return Atomo(
+            atm_mudante.qtd_crimes, atm_mudante.posicoes_vizinhos
+            , ind_cl_recipiente
+    )
+
+def retorna_matriz_atualizada(matriz_atomos, atm_mudante, pos_atm_mudante):
+    matriz_atualizada = deepcopy(ambiente.matriz_atomos)
+    matriz_atualizada[p_atm.x][p_atm.y] =  retorna_atm_atualizado(
+        atm_mudante, ind_cl_recipiente
+    )
+    return matriz_atualizada
+
+def retorna_clusters_atualizados(clusters, mudanca):
+
+
+def retorna_ambiente_atualizado(mudanca, ambiente):
+    atm_mudante = mudanca.atm_mudante
+    ind_cl_recipiente = mudanca.ind_cl_recipiente
+    p_atm = atm_mudante.posicao
+    """
+        Precisa criar os clusters
+    """
+    return ambiente_atualizado 
+
+def retorna_lista_pos_atm_lista
 
 def gera_sol_vizinha(ambiente, compact_tax):
     InfoMudanca = namedtuple('InfoMudanca',['atm_mudante', 'ind_cl_perdedor'
             , 'ind_cl_recipiente'])
     
-    def retorna_mudanca(clusters):
-        ind_cl_perdedor = randint(0,len(clusters) -1)
-        atm_mudante = retorna_atm_fronteira(ambiente.clusters[ind_cl_perdedor]) 
-        ind_cl_recipiente = retorna_ind_cluster_viz(atm_mudante)
-        return InfoMudanca(atm_mudante, ind_cl_perdedor, ind_cl_recipiente)
-
-
-    def retorna_ambiente_atualizado(mudanca, ambiente):
-        matriz_atualizada = deepcopy(ambiente.matriz_atomos)
-        atm_mudante = mudanca.atm_mudante
-        p_atm = atm_mudante.posicao
-        matriz_atualizada[p_atm.x][p_atm.y] = Atomo(
-
-        return ambiente_atualizado 
-    def retorna_lista_pos_atm_lista
 
     mudanca = retorna_mudanca(clusters)
     recipiente = ambiente_atualizado.clusters[mudanca.ind_cl_recipiente]
