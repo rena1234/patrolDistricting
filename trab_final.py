@@ -35,7 +35,7 @@ def retorna_ind_cluster_viz(atm_front, matriz_atomos):
 
 def retorna_cluster_dominante(clusters, funcao_comparacao):
     dominante = clusterd[0]
-    for cluster clusters:
+    for cluster in clusters:
         if funcao_comparacao(len(cluster.posicoes_atomos)
                 ,len(dominante.posicoes_atomos)):
             dominante = cluster
@@ -92,10 +92,35 @@ def retorna_matriz_atualizada(matriz_atomos, atm_mudante, pos_atm_mudante):
     )
     return matriz_atualizada
 
-def retorna_clusters_atualizados(clusters, mudanca):
+def retorna_cluster_sem_atm(cluster, pos_atm):
+    pos_atms = [p for p in cluster.posicoes_atomos
+                if (p.x != pos_atm_mudante.x and p.y != pos_atm_mudante.y )]
+    return Cluster(pos_atms, cluster.criminalidade)
 
+def retorna_clusters_atualizados(clusters, mudanca):
+    clusters_atualizados = []
+    pos_atm_mudante = mudanca.pos_atm_mudante
+    for i,cluster in enumerate(clusters):
+        cluster_atualizado = None
+        if i == mudanca.ind_cl_perdedor:    
+            clusters_atualizados.append(
+                retorna_cluster_sem_atm(cluster, pos_atm_mudante)
+            )
+            
+        else:
+            clusters_atualizados.append(deepcopy(cluster))
+    
+    clusters_atualizados[mudanca.ind_cl_recipiente].posicoes_atomos.append(
+            mudanca.pos_atm_mudante)
+
+    return clusters_atualizados
 
 def retorna_ambiente_atualizado(mudanca, ambiente):
+    
+    """
+        ALTERAR, mudanca agr n tem mais o átomo, só a posição dele
+    """
+
     atm_mudante = mudanca.atm_mudante
     ind_cl_recipiente = mudanca.ind_cl_recipiente
     p_atm = atm_mudante.posicao
@@ -107,7 +132,7 @@ def retorna_ambiente_atualizado(mudanca, ambiente):
 def retorna_lista_pos_atm_lista
 
 def gera_sol_vizinha(ambiente, compact_tax):
-    InfoMudanca = namedtuple('InfoMudanca',['atm_mudante', 'ind_cl_perdedor'
+    InfoMudanca = namedtuple('InfoMudanca',['pos_atm_mudante', 'ind_cl_perdedor'
             , 'ind_cl_recipiente'])
     
 
