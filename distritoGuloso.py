@@ -16,7 +16,6 @@
     CENTRO CARTESIANO AGR EH x/2,y/2
 
 """
-
 from copy import deepcopy
 from random import randint
 import math
@@ -74,50 +73,84 @@ def somaViolenciaCluster(cluster):
     return violencia
 
 def retIndClusterComVizMenosViolento(clusters):
-    clusterMenosViolento = clusters[0]
-    qtdCrimesClusterMV = somaViolenciaCluster(clusters[0]) 
     
-    i = 0; indiceMenosViolento = 0
-    for cluster in clusters:
-        violenciaCluster =  somaViolenciaCluster(cluster)
+    i = 0 
+    while len(clusters[i].vizinhos) == 0 and i < len(clusters):
+        i += 1
+    indiceMenosViolento = i
+
+    qtdCrimesClusterMV = somaViolenciaCluster(clusters[i]) 
+
+    for indice,cluster in enumerate(clusters):
+        violenciaCluster = somaViolenciaCluster(cluster)
         if violenciaCluster < qtdCrimesClusterMV and len(cluster.vizinhos) > 0:
-            clusterMenosViolento = cluster 
             qtdCrimesClusterMV = violenciaCluster
-            indiceMenosViolento = i
-        i+=1
+            indiceMenosViolento = indice
     return indiceMenosViolento
 
-def retornaVizinhosAtualizado(cluster, novoAtomoAdicionado):
-    vizinhancaAnterior = [ vizinho for vizinho in cluster.vizinhos 
-            if not vizinho is novoAtomoAdicionado ]
-    vizinhosNovos = [ x for x in novoAtomoAdicionado.vizinhos
-            if x not in vizinhancaAnterior ]
-    return vizinhancaAnterior + vizinhosNovos 
+def retornaVizinhosAtualizado(cluster, novoAtomoAdicionado, atomos_indisponiveis):
+    def remove_repetidos(lista):
+        lista_sem_repetidos = []
+        for elemento in lista:
+            if elemento not in lista_sem_repetidos:
+                lista_sem_repetidos.append(elemento)
+        return lista_sem_repetidos
+
+    vizinhancaAnterior = [ vizinho for vizinho in cluster.vizinhos ]
+
+    vizinhosNovos = [ x for x in novoAtomoAdicionado.vizinhos ]
+
+    vizinhanca_nova = remove_repetidos(vizinhosNovos + vizinhancaAnterior)
+
+    vizinhanca_nova = [ x for x in vizinhanca_nova if not ( x is novoAtomoAdicionado )]
+    return [ x for x in vizinhanca_nova if x not in atomos_indisponiveis ]
 
 def clusterizaGuloso(seeds):
     Cluster = namedtuple('Cluster', ['elementos', 'vizinhos'])
     clusters = [Cluster([seed],seed.vizinhos) for seed in seeds]
 
     clustersComVizinhos = [ x for x in clusters if len(x.vizinhos) > 0 ]
+    atomos_indisponiveis = []; atomos_indisponiveis += seeds
+
     while len(clustersComVizinhos) > 0:
         i = retIndClusterComVizMenosViolento(clusters)
         novoAtomoAdicionado = clusters[i].vizinhos[0]
         clusters[i].elementos.append(novoAtomoAdicionado)
         clusters[i] = Cluster(clusters[i].elementos,
-                retornaVizinhosAtualizado(clusters[i], novoAtomoAdicionado)) 
+                retornaVizinhosAtualizado(clusters[i], novoAtomoAdicionado,
+                atomos_indisponiveis))
+        atomos_indisponiveis.append(novoAtomoAdicionado)
 
         # retira o novoAtomoAdicionado dos vizinhos dos outros clusters
+        # POSSIVEL PROBLEMA aqui
         clusters = [ Cluster(x.elementos, [ v for v in x.vizinhos 
                 if not (v is novoAtomoAdicionado) ]) for x in clusters  ]
-        
+       
         clustersComVizinhos = [ x for x in clusters if len(x.vizinhos) > 0 ]
-    
-    return clusters
 
+        """
+        print("vizinhos 0")
+        print(len(clusters[0].vizinhos))
+        """
+
+        """
+        for cluster in clusters:
+            novosVizinhos = []
+            for vizinho in cluster.vizinhos:
+                if not ( vizinho is novoAtomoAdicionado ):
+                    novosVizinhos.append(vizinho)
+                else:
+                    print("Tá achando o cara igual")
+
+        clustersComVizinhos = [ x for x in clusters if len(x.vizinhos) > 0 ]
+        """
+    return clusters
 
 def clusterizaAleatorio(seeds):
     Cluster = namedtuple('Cluster', ['elementos', 'vizinhos'])
     clusters = [Cluster([seed],seed.vizinhos) for seed in seeds]
+    
+    atomos_indisponiveis = []; atomos_indisponiveis += seeds
 
     clustersComVizinhos = [ x for x in clusters if len(x.vizinhos) > 0 ]
     while len(clustersComVizinhos) > 0:
@@ -127,12 +160,17 @@ def clusterizaAleatorio(seeds):
         novoAtomoAdicionado = clusters[i].vizinhos[0]
         clusters[i].elementos.append(novoAtomoAdicionado)
         clusters[i] = Cluster(clusters[i].elementos,
-                retornaVizinhosAtualizado(clusters[i], novoAtomoAdicionado)) 
+                retornaVizinhosAtualizado(clusters[i], novoAtomoAdicionado,
+                atomos_indisponiveis))
+        atomos_indisponiveis.append(novoAtomoAdicionado)
 
         clusters = [ Cluster(x.elementos, [ v for v in x.vizinhos 
-                if not (v is novoAtomoAdicionado) ]) for x in clusters  ]
+                if not (v is novoAtomoAdicionado) ]) for x in clusters ]
 
         clustersComVizinhos = [ x for x in clusters if len(x.vizinhos) > 0 ]
+    
+    print([sum([x.qtdCrimes for x in cluster.elementos]) 
+            for cluster in clusters])
 
     return clusters
 
@@ -149,6 +187,7 @@ atomosGulosos = geraCidadeAleatoria(tamanhoXY)
 posicoesSeeds = determinaPosicoesSeeds(
         numSeeds, numCirculos, raioCirculoMenor, proporcaoCirculos, tamanhoXY)
 
+
 seedsGulosos = achaSeeds(atomosGulosos, posicoesSeeds)
 print("Desvio padrão qtdCrimes Clusterização Gulosa")
 
@@ -158,12 +197,12 @@ print([sum([x.qtdCrimes for x in cluster.elementos])
 print(pstdev([sum([x.qtdCrimes for x in cluster.elementos]) 
         for cluster in clusterizaGuloso(seedsGulosos)]))
 
-atomosAleatorios = deepcopy(atomosGulosos)
+atomosAleatorios = atomosGulosos
 seedsAleatorios = achaSeeds(atomosAleatorios, posicoesSeeds)
 print("Desvio padrão CLusterização Aleatória")
 
-print([sum([x.qtdCrimes for x in cluster.elementos]) 
-        for cluster in clusterizaAleatorio(seedsAleatorios)])
+#print([sum([x.qtdCrimes for x in cluster.elementos]) 
+ #       for cluster in clusterizaAleatorio(seedsAleatorios)])
 
 print(pstdev([sum([x.qtdCrimes for x in cluster.elementos]) 
         for cluster in clusterizaAleatorio(seedsAleatorios)]))
