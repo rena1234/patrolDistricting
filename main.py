@@ -1,5 +1,6 @@
 from distritoGuloso import distrita_guloso
 from trab_final import sim_annealing
+from collections import namedtuple
 
 Atomo_SA = namedtuple('Atomo_SA', 
         ['qtd_crimes', 'posicoes_vizinhos','num_cluster']
@@ -8,6 +9,9 @@ Atomo_SA = namedtuple('Atomo_SA',
 Cluster_SA = namedtuple('Cluster', ['posicoes_atomos', 'criminalidade'])
 
 Ambiente = namedtuple('Ambiente', ['clusters','matriz_atomos'])
+
+Ponto = namedtuple('Ponto',['x','y'])
+tamanhoXY = Ponto(25,25)
 
 matriz_atomos = [ 
         [None for i in range(tamanhoXY.x)] for j in range(tamanhoXY.y)
@@ -48,7 +52,7 @@ Opcoes = namedtuple(
         'Opcoes', ['taxa_dec', 't_inicial', 't_final'
             ,'num_itr_temp', 'compact_tax']
 )
-opcoes = Opcoes(0.9, 10, 0.1, 10000, 222) 
+opcoes = Opcoes(0.6, 10, 0.1, 100, 222) 
 
 print("Desvio padrão SA:")
 print(sim_annealing(ambiente, opcoes))
