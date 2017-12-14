@@ -1,21 +1,4 @@
 
-"""
-    Warning
-        TA TD ERRADO NESSA merda
-        PQ CADA FUNÇÂO TÀ TRATANDO O CENTRO DO SISTEMA COMO ALGO DIFERENTE
-
-        A FUNÇÂO QUE RETORNA OS SEEDS ESTÀ CORRETA!!!!
-
-        DÀ pra manter se vc mudar a função que calcula a criminalidade, para aceitar
-        um centro cartesiano que n seja 0,0 e sim x/2,y/2
-
-        o mesmo para a função que determina os  seeds
-"""
-
-"""
-    CENTRO CARTESIANO AGR EH x/2,y/2
-
-"""
 from copy import deepcopy
 from random import randint
 import math
@@ -24,11 +7,7 @@ from statistics import pstdev
 from collections import namedtuple
 
 def achaPontosCirculo(raio, numPontos):
-    """
-        Warning, essa merda gera numero negativo
-
-        Mas agr vc qrr ponto negativo, viva o coupling!
-    """
+    
     Ponto = namedtuple('Ponto', ['x','y'])
     pontos = []
     for i in range(numPontos):
@@ -56,10 +35,6 @@ def determinaPosicoesSeeds(
             for ponto in pontos]
 
 def achaSeeds(atomos, posicoesSeeds):
-    """
-        Dá treta aqui pq são namedtuples no posicoesSeeds
-        essa merda pode ser inclusive um objeto...
-    """
     seeds = [ a for a in atomos if 
             any(p.x == a.posicao.x and p.y == a.posicao.y 
             for p in posicoesSeeds)]
@@ -120,30 +95,12 @@ def clusterizaGuloso(seeds):
                 retornaVizinhosAtualizado(clusters[i], novoAtomoAdicionado,
                 atomos_indisponiveis))
         atomos_indisponiveis.append(novoAtomoAdicionado)
-
-        # retira o novoAtomoAdicionado dos vizinhos dos outros clusters
-        # POSSIVEL PROBLEMA aqui
+        
         clusters = [ Cluster(x.elementos, [ v for v in x.vizinhos 
                 if not (v is novoAtomoAdicionado) ]) for x in clusters  ]
        
         clustersComVizinhos = [ x for x in clusters if len(x.vizinhos) > 0 ]
-
-        """
-        print("vizinhos 0")
-        print(len(clusters[0].vizinhos))
-        """
-
-        """
-        for cluster in clusters:
-            novosVizinhos = []
-            for vizinho in cluster.vizinhos:
-                if not ( vizinho is novoAtomoAdicionado ):
-                    novosVizinhos.append(vizinho)
-                else:
-                    print("Tá achando o cara igual")
-
-        clustersComVizinhos = [ x for x in clusters if len(x.vizinhos) > 0 ]
-        """
+        
     return clusters
 
 def clusterizaAleatorio(seeds):
@@ -178,11 +135,6 @@ def distrita_guloso():
     Ponto = namedtuple('Ponto',['x','y'])
     tamanhoXY = Ponto(25,25)
 
-    """
-        Vc tem que tratar o fato de que determinados circulos n passam por n seeds
-
-        tem que tratar numero de seeds não divisivel pelo numero de circulos
-    """
     numCirculos = 2; raioCirculoMenor = 5; proporcaoCirculos = 2; numSeeds = 8; 
     atomosGulosos = geraCidadeAleatoria(tamanhoXY)
     posicoesSeeds = determinaPosicoesSeeds(
@@ -202,9 +154,6 @@ def distrita_guloso():
     atomosAleatorios = atomosGulosos
     seedsAleatorios = achaSeeds(atomosAleatorios, posicoesSeeds)
     print("Desvio padrão CLusterização Aleatória")
-
-    #print([sum([x.qtdCrimes for x in cluster.elementos]) 
-     #       for cluster in clusterizaAleatorio(seedsAleatorios)])
 
     print(pstdev([sum([x.qtdCrimes for x in cluster.elementos]) 
             for cluster in clusterizaAleatorio(seedsAleatorios)]))
