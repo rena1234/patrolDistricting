@@ -174,35 +174,39 @@ def clusterizaAleatorio(seeds):
 
     return clusters
 
-Ponto = namedtuple('Ponto',['x','y'])
-tamanhoXY = Ponto(25,25)
+def distrita_guloso():
+    Ponto = namedtuple('Ponto',['x','y'])
+    tamanhoXY = Ponto(25,25)
 
-"""
-    Vc tem que tratar o fato de que determinados circulos n passam por n seeds
+    """
+        Vc tem que tratar o fato de que determinados circulos n passam por n seeds
 
-    tem que tratar numero de seeds não divisivel pelo numero de circulos
-"""
-numCirculos = 2; raioCirculoMenor = 5; proporcaoCirculos = 2; numSeeds = 8; 
-atomosGulosos = geraCidadeAleatoria(tamanhoXY)
-posicoesSeeds = determinaPosicoesSeeds(
-        numSeeds, numCirculos, raioCirculoMenor, proporcaoCirculos, tamanhoXY)
+        tem que tratar numero de seeds não divisivel pelo numero de circulos
+    """
+    numCirculos = 2; raioCirculoMenor = 5; proporcaoCirculos = 2; numSeeds = 8; 
+    atomosGulosos = geraCidadeAleatoria(tamanhoXY)
+    posicoesSeeds = determinaPosicoesSeeds(
+            numSeeds, numCirculos, raioCirculoMenor, proporcaoCirculos, tamanhoXY)
 
 
-seedsGulosos = achaSeeds(atomosGulosos, posicoesSeeds)
-print("Desvio padrão qtdCrimes Clusterização Gulosa")
+    seedsGulosos = achaSeeds(atomosGulosos, posicoesSeeds)
+    print("Desvio padrão qtdCrimes Clusterização Gulosa")
+    
+    clusters_gulosos = clusterizaGuloso(seedsGulosos)
+    print([sum([x.qtdCrimes for x in cluster.elementos]) 
+            for cluster in clusters_gulosos ])
 
-print([sum([x.qtdCrimes for x in cluster.elementos]) 
-        for cluster in clusterizaGuloso(seedsGulosos)])
+    print(pstdev([sum([x.qtdCrimes for x in cluster.elementos]) 
+            for cluster in clusterizaGuloso(seedsGulosos)]))
 
-print(pstdev([sum([x.qtdCrimes for x in cluster.elementos]) 
-        for cluster in clusterizaGuloso(seedsGulosos)]))
+    atomosAleatorios = atomosGulosos
+    seedsAleatorios = achaSeeds(atomosAleatorios, posicoesSeeds)
+    print("Desvio padrão CLusterização Aleatória")
 
-atomosAleatorios = atomosGulosos
-seedsAleatorios = achaSeeds(atomosAleatorios, posicoesSeeds)
-print("Desvio padrão CLusterização Aleatória")
+    #print([sum([x.qtdCrimes for x in cluster.elementos]) 
+     #       for cluster in clusterizaAleatorio(seedsAleatorios)])
 
-#print([sum([x.qtdCrimes for x in cluster.elementos]) 
- #       for cluster in clusterizaAleatorio(seedsAleatorios)])
+    print(pstdev([sum([x.qtdCrimes for x in cluster.elementos]) 
+            for cluster in clusterizaAleatorio(seedsAleatorios)]))
 
-print(pstdev([sum([x.qtdCrimes for x in cluster.elementos]) 
-        for cluster in clusterizaAleatorio(seedsAleatorios)]))
+    return clusters_gulosos

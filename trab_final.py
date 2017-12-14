@@ -10,9 +10,6 @@ Cluster = namedtuple('Cluster', ['posicoes_atomos', 'criminalidade'])
 Atomo = namedtuple('Atomo', ['qtd_crimes', 'posicoes_vizinhos','num_cluster'])
 Ponto = namedtuple('Ponto', ['x','y'])
 Ambiente = namedtuple('Ambiente', ['clusters','matriz_atomos'])
-Parametros = namedtuple(
-        'Parametros', ['n', 't_inicial', 't_final', 'a', 'compact_tax']
-)
 
 def retorna_pos_atm_fronteira(cluster, num_cluster,  matriz_atomos):
 
@@ -160,24 +157,31 @@ def retorna_sucesso(prob):
 
 def sim_annealing(solucao_inicial, opcoes):
     temp = opcoes.t_inicial; num_itr_temp = opcoes.num_itr_temp
+    t_final = opcoes.t_final
     clusters = solucao_inicial.clusters
     melhor_sol = solucao_inicial
     stdev_melhor = pstdev([c.criminalidade for c in clusters])
+    sol_atual = melhor_sol
+    stdev_atual = stdev_melhor
     while temp > t_final:
-        for i in range(num_itr_tempe):
+        for i in range(num_itr_temp):
             nova_sol =  gera_sol_vizinha(melhor_sol, opcoes.compact_tax)
             stdev_candidato = pstdev([c.criminalidade for c in clusters])
             """
                 Ordem invertida em relação ao slide pois aqui, qnt maior
                 o desvio padrao, pior
             """
-            delta_e = stdev_melhor - stdev_candidato 
+            delta_e = stdev_atual - stdev_candidato 
             if delta_e >= 0:
-                melhor_sol = nova_sol
+                sol_atual = nova_sol
+                stdev_atual = stdev_candidato
+                if stdev_atual < stdev_melhor:
+                    stdev_melhor = stdev_atual
+                    melhor_sol = sol_atual
             elif retorna_sucesso(math.exp(-delta_e/temp)):
                 melhor_sol = nova_sol
         temp = temp * opcoes.taxa_dec
 
 
-    return clusters_atualizados
+    return stdev_melhor
 
