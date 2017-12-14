@@ -15,22 +15,13 @@ def retorna_pos_atm_fronteira(cluster, num_cluster,  matriz_atomos):
 
     atms_ja_visitados = []
     while(True):
-        """
-        print(cluster)
-        print(matriz_atomos[cluster.posicoes_atomos[0].x][cluster.posicoes_atomos[0].y].qtd_crimes)
-        """
+       
         pos_atm = cluster.posicoes_atomos[randint(0,len(cluster.posicoes_atomos) - 1 )]
         atm = matriz_atomos[pos_atm.x][pos_atm.y]
-        """
-        vizs_outro_cluster = [pos in atm.posicoes_vizinhos 
-                if not(matriz_atomos[pos.x][pos.y].num_cluster == num_cluster)
-        ]
-        """
+        
         vizs_outro_cluster = []
         for pos in atm.posicoes_vizinhos:
-            """
-            print("Tem vizinho sim")
-            """
+           
             if not (matriz_atomos[pos.x][pos.y].num_cluster == num_cluster):
                 vizs_outro_cluster.append(pos_atm)
 
@@ -56,29 +47,6 @@ def retorna_cluster_dominante(clusters, funcao_comparacao):
                 ,len(dominante.posicoes_atomos)):
             dominante = cluster
     return dominante
-
-"""
-def retorna_tam_maior_cluster(clusters):
-    tamanho = len(clusters[0].posicoes_atomos)
-    for cluster in clusters:
-    for i,cluster in enumerate(clusters):
-        if len(cluster.matriz_atomos) > len(clusters[indice].matriz_atomos):
-            indice = i;
-    return indice
-
-def retorna_tam_menor_cluster(clusters):
-    tamanho = len(clusters[0].posicoes_atomos)
-    for cluster in clusters:
-        if len(cluster.matriz_atomos) < len(clusters[indice].matriz_atomos):
-            indice = i;
-    return indice
-
-def retorna_compact_tax(clusters):
-    tam_menor = len(clusters[retorna_ind_menor_cluster(clusters)]
-    tam_maior = clusters[retorna_ind_maior_cluster(clusters)]
-    return tam_maior / tam_menor;
-
-"""
 
 def retorna_compact_tax(clusters):
    return (len(retorna_cluster_dominante(clusters, gt))
@@ -163,10 +131,7 @@ def retorna_ambiente_atualizado(mudanca, ambiente):
 def gera_sol_vizinha(ambiente, compact_tax):
     clusters = ambiente.clusters; matriz_atomos = ambiente.matriz_atomos
     mudanca = retorna_mudanca(clusters, matriz_atomos)
-    """
-    print("solviz")
-    print(mudanca.pos_atm_mudante)
-    """
+    
     return retorna_ambiente_atualizado(mudanca, ambiente)
 
 def retorna_sucesso(prob):
@@ -184,39 +149,22 @@ def sim_annealing(solucao_inicial, opcoes):
     stdev_melhor = pstdev([c.criminalidade for c in clusters])
     sol_atual = melhor_sol
     stdev_atual = stdev_melhor
-
-    print([c.criminalidade for c in melhor_sol.clusters])
-    """
-    print("pos atm")
-    print(clusters[0].posicoes_atomos[0])
-
-    """
+    
     while temp > t_final:
         for i in range(num_itr_temp):
             nova_sol =  gera_sol_vizinha(melhor_sol, opcoes.compact_tax)
             stdev_candidato = pstdev([c.criminalidade for c in nova_sol.clusters])
-            """
-                Ordem invertida em relação ao slide pois aqui, qnt maior
-                o desvio padrao, pior
-            """
+    
             delta_e = stdev_atual - stdev_candidato
-            """
-            print(i)
-            print(delta_e)
-            """
-            if delta_e >= 0:
+                if delta_e >= 0:
                 sol_atual = nova_sol
                 stdev_atual = stdev_candidato
                 if stdev_atual < stdev_melhor:
                     stdev_melhor = stdev_atual
                     melhor_sol = sol_atual
             elif retorna_sucesso(math.exp(-delta_e/temp)):
-                """
-                print("entrei aqui")
-                """
-                melhor_sol = nova_sol
+                    melhor_sol = nova_sol
         temp = temp * opcoes.taxa_dec
 
     print([c.criminalidade for c in melhor_sol.clusters])
     return stdev_melhor
-
