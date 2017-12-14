@@ -20,16 +20,6 @@ matriz_atomos = [
 Opcoes = namedtuple(
         'Opcoes', ['n', 't_inicial', 't_final', 'a', 'compact_tax']
 )
-"""
-for atomo in atomos:
-    pos = atomo.posicao
-    posicoes_vizinhos = [ 
-            Ponto(v.posicao.x, v.posicao.y) for v in atomo.vizinhos 
-    ] 
-    matriz_atomos[pos.x][pos.y] = Atomo_SA(
-            atomo.qtdCrimes, posicoes_vizinhos, 
-
-"""
 
 clusters = distrita_guloso()
 
