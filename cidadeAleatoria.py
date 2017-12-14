@@ -1,10 +1,3 @@
-"""
-    Warning
-        TA TD ERRADO NESSA merda
-        PQ CADA FUNÇÂO TÀ TRATANDO O CENTRO DO SISTEMA COMO ALGO DIFERENTE
-
-        
-"""
 import math
 from random import randint
 from collections import namedtuple
@@ -79,5 +72,4 @@ def geraCidadeAleatoria(tamanhoXY):
     """
         FUUUUUCK, eh um namedtuple, vc n pode fzr isso
     """
-
     return atomos
