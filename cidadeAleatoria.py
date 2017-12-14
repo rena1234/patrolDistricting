@@ -54,22 +54,10 @@ def geraCidadeAleatoria(tamanhoXY):
                     in achaVizinhosJaCriados(tamanhoXY, posicao, atomos)],
                     tamanhoXY)
             atomos.append(Atomo('a', posicao, qtdCrimes, []))
-    """
-    cidadeAleatoria = [ Atomo(atomo.nome, atomo.posicao, atomo.qtdCrimes, 
-            achaVizinhos(atomo, atomos, tamanhoXY))
-            for atomo in atomos ]
-    """
-    
-    """
-        MAH OE, achou o erro, vc está criando novos átomos, mas põe COMO
-        vizinhos os atomos velhos, que n tinham vizinhos
-    """
     
     for atomo in atomos:
         vizinhos = achaVizinhos(atomo, atomos, tamanhoXY)
         for vizinho in vizinhos:
             atomo.vizinhos.append(vizinho)
-    """
-        FUUUUUCK, eh um namedtuple, vc n pode fzr isso
-    """
+    
     return atomos
